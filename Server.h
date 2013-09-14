@@ -9,7 +9,9 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
-namespace echol
+#include "RequestHeaderParser.h"
+
+namespace uploadia
 {
 class Server{
 public:
@@ -60,7 +62,7 @@ public:
 			}
 			else if(pid == 0){
 				close(socket_);
-				std::vector<uint8_t> in_buffer(2048, 0);
+				std::vector<uint8_t> in_buffer(4096, 0);
 				int in_size = 
 					recv(client_socket, &in_buffer.front(), in_buffer.size(), 0);
 				if(in_size < 0){
@@ -69,6 +71,9 @@ public:
 				std::string in_buffer_str(
 					in_buffer.begin(), in_buffer.begin()+in_size);
 				std::cout << in_buffer_str << std::endl;
+				in_buffer.resize(in_size);
+				RequestHeader request = request_parser_.Parse(in_buffer);
+				std::cout << request << std::endl;
 				send(client_socket, &response_vec.front(), response_vec.size(), 0);
 				close(client_socket);
 				exit(EXIT_SUCCESS);	
@@ -79,7 +84,7 @@ public:
 private:
 	int socket_;
 	struct sockaddr_in address_;
-
+	RequestHeaderParser request_parser_;
 };
 }
 

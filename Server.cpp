@@ -2,7 +2,7 @@
 #include "Server.h"
 #include <iostream>
 
-using namespace echol;
+using namespace uploadia;
 
 int main(int argc, char* argv[])
 {
